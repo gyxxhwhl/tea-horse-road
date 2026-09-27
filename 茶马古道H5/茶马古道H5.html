@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2B2118">
+<title>以茶为路 · 茶马古道上的共同家园</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3a3 3 0 0 0-3 3v3H6.5a1 1 0 0 0-1 1 6.2 6.2 0 0 0 6.5 6.5 6.2 6.2 0 0 0 6.5-6.5 1 1 0 0 0-1-1H15V6a3 3 0 0 0-3-3z' fill='%23C99B5E'/%3E%3Cpath d='M10 18.5h4M11 21h2' stroke='%23C99B5E' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://miaoda.feishu.cn">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+:root{
+  --ink:#2B2118;
+  --brown:#7A4E2D;
+  --gold:#C99B5E;
+  --goldL:#E8C996;
+  --paper:#F6EFE3;
+  --night:#222B3A;
+  --clay:#A8563A;
+  --serif:"Noto Serif SC","Songti SC","STSong","SimSun",serif;
+  --sans:"Noto Sans SC","Microsoft YaHei","PingFang SC","SimHei",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:var(--sans);
+  background:#171209;
+  color:var(--paper);
+  overflow:hidden;
+}
+#stage{
+  position:fixed;inset:0;
+  max-width:520px;margin:0 auto;
+  overflow:hidden;
+}
+.page{
+  position:absolute;inset:0;
+  opacity:0;visibility:hidden;
+  transition:opacity .65s ease;
+  overflow:hidden;
+}
+.page.active{opacity:1;visibility:visible;z-index:2}
+.pbg{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+}
+.veil{
+  position:absolute;inset:0;
+}
+.wrap{
+  position:relative;z-index:3;
+  height:100%;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:calc(10% + 18px) 7% calc(13% + 96px);
+  max-width:520px;margin:0 auto;
+  overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;
+}
+.wrap::-webkit-scrollbar{display:none}
+.wrap.top{justify-content:flex-start;padding-top:calc(10% + 34px)}
+.wrap.center{justify-content:center;align-items:center;text-align:center}
+.chap{
+  font-size:12px;letter-spacing:.42em;color:var(--goldL);
+  margin-bottom:10px;font-weight:500;
+}
+.chap::before, .chap::after{content:"—";opacity:.6;margin:0 8px}
+h2.tt{
+  font-family:var(--serif);font-weight:700;
+  font-size:clamp(26px,8.2vw,38px);line-height:1.25;
+  color:var(--paper);letter-spacing:.06em;
+  text-shadow:0 2px 18px rgba(0,0,0,.45);
+  margin-bottom:14px;
+}
+.card{
+  background:rgba(246,239,227,.94);
+  color:var(--ink);
+  border-radius:14px;
+  padding:16px 18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+}
+.card p{font-size:15px;line-height:1.85;font-weight:400}
+.card p+p{margin-top:8px}
+.card .em{color:var(--clay);font-weight:700}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:18px;padding:13px 26px;
+  border-radius:999px;
+  background:var(--ink);color:var(--goldL);
+  border:1px solid rgba(201,155,94,.65);
+  font-family:var(--serif);font-size:16px;font-weight:700;letter-spacing:.14em;
+  cursor:pointer;
+  transition:transform .18s ease,background .18s ease;
+}
+.btn:active{transform:scale(.96)}
+.btn.gold{
+  background:var(--gold);color:#2B2118;border-color:var(--goldL);
+}
+.btn.hide{display:none}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.rowbtn{
+  display:flex;gap:18px;align-items:center;justify-content:space-between;
+}
+.arrowbtn{
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(43,33,24,.55);border:1px solid rgba(201,155,94,.55);
+  color:var(--goldL);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .18s ease,background .18s ease;
+}
+.arrowbtn:active{transform:scale(.92)}
+.arrowbtn.off{opacity:0;pointer-events:none}
+/* 进度点 */
+.dots{
+  position:fixed;right:max(10px,calc((100vw - 520px)/2 + 6px));top:50%;
+  transform:translateY(-50%);z-index:60;
+  display:flex;flex-direction:column;gap:6px;
+}
+.dots button{
+  width:32px;height:32px;border:none;padding:0;
+  background:transparent;cursor:pointer;position:relative;
+}
+.dots button::after{
+  content:"";position:absolute;inset:0;margin:auto;
+  width:9px;height:9px;border-radius:50%;
+  background:rgba(246,239,227,.3);
+  transition:background .25s ease,transform .25s ease;
+}
+.dots button.on::after{background:var(--gold);transform:scale(1.25)}
+.pageno{
+  position:fixed;right:max(10px,calc((100vw - 520px)/2 + 6px));
+  bottom:22px;z-index:60;
+  font-size:12px;letter-spacing:.18em;color:rgba(246,239,227,.6);
+  font-family:var(--serif);
+}
+.sound{
+  position:fixed;top:calc(env(safe-area-inset-top) + 12px);
+  right:max(12px,calc((100vw - 520px)/2 + 10px));z-index:60;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(43,33,24,.45);border:1px solid rgba(201,155,94,.5);
+  color:var(--goldL);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.sound svg{width:18px;height:18px}
+/* ===== P1 封面 ===== */
+#p1 .pbg{background-image:url('assets/cover.jpg')}
+#p1 .veil{background:linear-gradient(180deg,rgba(20,14,8,.10) 0%,rgba(20,14,8,.18) 45%,rgba(20,14,8,.82) 100%)}
+#p1 .kicker{
+  font-size:13px;letter-spacing:.5em;color:var(--goldL);
+  margin-bottom:18px;
+}
+#p1 .big{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(46px,14vw,66px);line-height:1.12;
+  letter-spacing:.12em;color:var(--paper);
+  text-shadow:0 4px 30px rgba(0,0,0,.5);
+}
+#p1 .big small{
+  display:block;font-size:clamp(20px,6vw,28px);font-weight:700;
+  letter-spacing:.5em;margin-top:10px;color:var(--goldL);
+  text-indent:.5em;
+}
+#p1 .subline{margin-top:20px;font-size:14px;letter-spacing:.3em;color:rgba(246,239,227,.9)}
+#p1 .btn{margin-top:30px}
+#p1 .hint{
+  position:absolute;bottom:calc(env(safe-area-inset-bottom) + 30px);
+  left:56px;right:56px;text-align:center;z-index:4;
+  font-size:13px;letter-spacing:.3em;color:rgba(246,239,227,.75);
+  animation:hintPulse 2.4s ease-in-out infinite;
+}
+@keyframes hintPulse{0%,100%{opacity:.5;transform:translateY(0)}50%{opacity:1;transform:translateY(6px)}}
+/* ===== P2 悬念 ===== */
+#p2 .pbg{background-image:url('assets/butter_tea.jpg')}
+#p2 .veil{background:linear-gradient(180deg,rgba(20,14,8,.12) 0%,rgba(20,14,8,.28) 40%,rgba(20,14,8,.88) 100%)}
+.q-opt{
+  display:block;width:100%;text-align:left;
+  margin-top:10px;padding:12px 16px;
+  border-radius:12px;
+  background:rgba(246,239,227,.94);color:var(--ink);
+  border:1px solid rgba(43,33,24,.15);
+  font-family:var(--sans);font-size:15px;cursor:pointer;
+  transition:transform .15s ease;
+}
+.q-opt:active{transform:scale(.98)}
+.q-opt.done{opacity:.45;pointer-events:none}
+.q-opt.right{background:#E7D7BD;border-color:var(--clay);opacity:1}
+.q-fb{display:none;margin-top:12px;font-size:14px;line-height:1.8}
+.q-fb.show{display:block}
+/* ===== P3 出发 ===== */
+#p3 .pbg{background-image:url('assets/departure.jpg')}
+#p3 .veil{background:linear-gradient(180deg,rgba(20,14,8,.10) 0%,rgba(20,14,8,.30) 40%,rgba(20,14,8,.9) 100%)}
+.brick{
+  margin-top:14px;display:inline-flex;align-items:center;gap:10px;
+  padding:11px 18px;border-radius:12px;cursor:pointer;
+  background:rgba(43,33,24,.55);border:1px dashed rgba(201,155,94,.8);
+  color:var(--goldL);font-size:14px;letter-spacing:.1em;
+}
+.brick:active{transform:scale(.97)}
+.brick svg{width:18px;height:18px;flex:none}
+.modal{
+  position:fixed;inset:0;z-index:80;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(20,14,8,.6);padding:28px 20px;
+}
+.modal.show{display:flex}
+.modal .box{
+  max-width:420px;width:100%;
+  background:var(--paper);color:var(--ink);
+  border-radius:16px;padding:24px 22px;
+  box-shadow:0 18px 60px rgba(0,0,0,.5);
+  position:relative;
+}
+.modal .box h3{
+  font-family:var(--serif);font-size:19px;margin-bottom:12px;color:var(--clay);
+}
+.modal .box p{font-size:15px;line-height:1.9}
+.modal .box .mclose{
+  position:absolute;top:12px;right:14px;
+  width:30px;height:30px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(43,33,24,.1);color:var(--ink);font-size:16px;
+}
+/* ===== P4 险途 ===== */
+#p4 .pbg{background-image:url('assets/danger.jpg')}
+#p4 .veil{background:linear-gradient(180deg,rgba(20,14,8,.16) 0%,rgba(20,14,8,.42) 45%,rgba(20,14,8,.94) 100%)}
+.risk{
+  margin-top:10px;border-radius:12px;overflow:hidden;
+  background:rgba(246,239,227,.9);color:var(--ink);
+  border:1px solid rgba(43,33,24,.15);cursor:pointer;
+  transition:transform .15s ease;
+}
+.risk:active{transform:scale(.985)}
+.risk .rh{
+  display:flex;align-items:center;gap:12px;padding:12px 16px;
+  font-family:var(--serif);font-size:16px;font-weight:700;
+}
+.risk .rh .no{color:var(--clay);font-size:13px;letter-spacing:.1em}
+.risk .rd{display:none;padding:0 16px 14px;font-size:13.5px;line-height:1.8}
+.risk.lit .rd{display:block}
+.risk.lit{border-color:var(--clay);background:var(--paper)}
+.goldline{
+  margin-top:16px;text-align:center;
+  font-family:var(--serif);font-size:17px;letter-spacing:.1em;
+  color:var(--goldL);text-shadow:0 2px 14px rgba(0,0,0,.6);
+}
+/* ===== P5 相遇 ===== */
+#p5 .pbg{background-image:url('assets/market.jpg')}
+#p5 .veil{background:linear-gradient(180deg,rgba(20,14,8,.08) 0%,rgba(20,14,8,.24) 42%,rgba(20,14,8,.9) 100%)}
+.trade{
+  margin-top:14px;
+  background:rgba(246,239,227,.94);color:var(--ink);
+  border-radius:14px;padding:14px 14px 10px;
+}
+.trade .two{display:flex;gap:10px}
+.trade .side{flex:1}
+.trade .side h4{
+  font-size:13px;letter-spacing:.18em;color:var(--brown);
+  margin-bottom:8px;text-align:center;
+}
+.goods{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+}
+.good{
+  padding:8px 12px;border-radius:10px;cursor:pointer;
+  background:#EFE6D4;border:1px solid rgba(43,33,24,.18);
+  font-size:14px;
+  transition:transform .15s ease,background .15s ease;
+}
+.good:active{transform:scale(.95)}
+.good.sel{background:#E7D7BD;border-color:var(--clay)}
+.good.done{opacity:.35;pointer-events:none}
+.tlog{margin-top:10px;font-size:13px;line-height:1.7;min-height:24px;color:var(--brown)}
+.stamp{
+  display:none;margin:12px auto 0;width:120px;height:120px;
+  border:3px solid var(--clay);border-radius:50%;
+  color:var(--clay);font-family:var(--serif);font-weight:700;
+  font-size:20px;letter-spacing:.2em;
+  align-items:center;justify-content:center;text-align:center;
+  transform:rotate(-8deg);
+}
+.stamp.show{display:flex;animation:stampIn .5s ease}
+@keyframes stampIn{0%{transform:rotate(-8deg) scale(1.6);opacity:0}100%{transform:rotate(-8deg) scale(1);opacity:1}}
+/* ===== P6 共生 ===== */
+#p6{background:var(--paper);color:var(--ink)}
+#p6 .wrap{padding-top:calc(10% + 34px)}
+#p6 .chap{color:var(--clay)}
+#p6 h2.tt{color:var(--ink);text-shadow:none}
+.gallery{
+  margin-top:14px;
+  display:flex;overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;border-radius:14px;
+}
+.gallery::-webkit-scrollbar{display:none}
+.gslide{
+  flex:0 0 100%;scroll-snap-align:center;
+  position:relative;border-radius:14px;overflow:hidden;
+}
+.gslide img{width:100%;height:44vh;object-fit:cover;display:block}
+.gslide .cap{
+  position:absolute;left:10px;right:10px;bottom:10px;
+  background:rgba(246,239,227,.92);color:var(--ink);
+  border-radius:10px;padding:10px 14px;font-size:14px;line-height:1.7;
+}
+.gdots{display:flex;gap:7px;justify-content:center;margin-top:10px}
+.gdots i{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(43,33,24,.25);
+}
+.gdots i.on{background:var(--clay)}
+.goldline.dark{color:var(--clay);text-shadow:none;margin-top:14px;font-size:16px}
+/* ===== P7 回望 ===== */
+#p7 .pbg{background-image:url('assets/today.jpg')}
+#p7 .veil{background:linear-gradient(180deg,rgba(20,14,8,.12) 0%,rgba(20,14,8,.32) 45%,rgba(20,14,8,.92) 100%)}
+.times{
+  display:flex;gap:10px;margin-top:14px;
+}
+.times .t{
+  flex:1;padding:12px 8px;text-align:center;border-radius:12px;cursor:pointer;
+  background:rgba(246,239,227,.9);color:var(--ink);
+  border:1px solid rgba(43,33,24,.15);
+  font-family:var(--serif);font-size:15px;
+}
+.times .t.on{background:var(--ink);color:var(--goldL);border-color:var(--gold)}
+.tnote{margin-top:12px;font-size:14px;line-height:1.8}
+/* ===== P8 留言 ===== */
+#p8{background:var(--paper);color:var(--ink)}
+#p8 .wrap{padding-top:calc(10% + 34px)}
+#p8 .chap{color:var(--clay)}
+#p8 h2.tt{color:var(--ink);text-shadow:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{
+  padding:9px 14px;border-radius:999px;cursor:pointer;
+  background:#EFE6D4;border:1px solid rgba(43,33,24,.18);
+  font-size:14px;color:var(--ink);
+}
+.chip.on{background:var(--ink);color:var(--goldL);border-color:var(--ink)}
+textarea{
+  width:100%;margin-top:12px;padding:12px 14px;
+  border-radius:12px;border:1px solid rgba(43,33,24,.22);
+  background:#FBF6EC;color:var(--ink);
+  font-family:var(--sans);font-size:16px;line-height:1.7;
+  resize:none;min-height:74px;
+}
+textarea:focus{outline:2px solid var(--gold)}
+.postcard{
+  display:none;margin-top:14px;
+  background:linear-gradient(160deg,#F6EFE3 0%,#EADFC9 100%);
+  border:1px solid rgba(122,78,45,.4);border-radius:16px;
+  padding:22px 20px;text-align:center;position:relative;
+}
+.postcard.show{display:block;animation:stampIn .5s ease}
+.postcard .pc-no{
+  position:absolute;top:12px;left:14px;font-size:11px;letter-spacing:.14em;color:var(--brown);
+}
+.postcard .pc-stamp{
+  position:absolute;top:12px;right:14px;
+  width:44px;height:44px;border:2px solid var(--clay);border-radius:50%;
+  color:var(--clay);font-size:9px;letter-spacing:.08em;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  transform:rotate(-10deg);
+}
+.postcard h4{font-family:var(--serif);font-size:18px;color:var(--clay);letter-spacing:.2em}
+.postcard .pc-words{
+  margin:14px 0 4px;font-family:var(--serif);font-size:17px;line-height:1.8;color:var(--ink);
+}
+.postcard .pc-foot{font-size:12px;color:var(--brown);letter-spacing:.12em}
+/* ===== P9 结尾 ===== */
+#p9 .pbg{background-image:url('assets/cover.jpg')}
+#p9 .veil{background:linear-gradient(180deg,rgba(20,14,8,.42) 0%,rgba(20,14,8,.55) 50%,rgba(20,14,8,.88) 100%)}
+#p9 .final{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(24px,7vw,34px);line-height:1.5;letter-spacing:.1em;
+  color:var(--goldL);
+  text-shadow:0 3px 24px rgba(0,0,0,.6);
+  margin-bottom:16px;
+}
+#p9 .final small{display:block;font-size:clamp(15px,4.6vw,19px);font-weight:600;margin-top:10px;letter-spacing:.18em;color:var(--paper)}
+.quote{margin-top:10px;font-family:var(--serif);font-size:18px;letter-spacing:.12em;color:var(--paper);text-shadow:0 2px 16px rgba(0,0,0,.6)}
+.foot{margin-top:34px;font-size:11px;letter-spacing:.22em;color:rgba(246,239,227,.6)}
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 40px);
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(43,33,24,.92);color:var(--goldL);
+  padding:11px 20px;border-radius:999px;font-size:14px;
+  opacity:0;pointer-events:none;z-index:90;
+  transition:opacity .3s ease,transform .3s ease;
+  max-width:84%;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion: reduce){
+  .page,.btn,.arrowbtn,.good,.risk,.brick,.toast{transition:none!important;animation:none!important}
+}
+@media (min-width:521px){
+  #stage{box-shadow:0 0 60px rgba(0,0,0,.55)}
+}
+</style>
+</head>
+<body>
+
+<div class="dots" id="dots" role="navigation" aria-label="页面进度"></div>
+<div class="pageno" id="pageno">1 / 9</div>
+<button class="sound" id="soundBtn" aria-label="声音开关" title="声音开关">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5a4 4 0 0 1 0 5"/><path d="M19 7a8 8 0 0 1 0 10"/></svg>
+</button>
+
+<div id="stage">
+
+<!-- ===== P1 封面 ===== -->
+<section class="page active" id="p1">
+  <div class="pbg"></div>
+  <div class="veil"></div>
+  <div class="wrap center">
+    <div class="kicker">茶马古道 · 千年商道</div>
+    <div class="big">以茶为路<small>共赴家园</small></div>
+    <div class="subline">“构筑中华民族共有精神家园”主题创意宣传</div>
+    <button class="btn gold" id="btnP1">循着马铃声出发</button>
+  </div>
+  <div class="hint">上滑 · 循着马铃出发</div>
+</section>
+
+<!-- ===== P2 悬念 ===== -->
+<section class="page" id="p2">
+  <div class="pbg"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="chap">序 · 悬念</div>
+    <h2 class="tt">一碗酥油茶</h2>
+    <div class="card">
+      <p>雪域高原的清晨，第一件事是生火、打茶。</p>
+      <p>糌粑、酥油、牛羊肉——这里的日子，样样离不开一碗热茶。</p>
+      <p class="em">可高原上，不长茶树。</p>
+      <p style="margin-top:12px">猜一猜——茶，是怎么翻上高原的？</p>
+      <button class="q-opt" data-opt="a">A　顺江漂上来</button>
+      <button class="q-opt" data-opt="b">B　人背马驮，走上来</button>
+      <button class="q-opt" data-opt="c">C　从天上掉下来</button>
+      <div class="q-fb" id="qFb"></div>
+    </div>
+    <button class="btn hide" id="btnP2">沿着马铃声出发</button>
+  </div>
+</section>
+
+<!-- ===== P3 出发 ===== -->
+<section class="page" id="p3">
+  <div class="pbg"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="chap">第一幕 · 出发</div>
+    <h2 class="tt">驮着茶香的队伍</h2>
+    <div class="card">
+      <p>汉地的茶，压成一块块茶砖，驮上马背，交到背夫肩上。</p>
+      <p>从雅安出发，翻过横断山脉，一直走到拉萨。</p>
+      <p class="em">头骡的铜铃一响，千山万水，就都成了路。</p>
+    </div>
+    <button class="brick" id="brickBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M4 8h16v8H4z"/><path d="M7 8V5h10v3M7 16v3h10v-3"/><path d="M7 11h1M12 11h1M17 11h1"/></svg>
+      点一点茶砖，看看马帮的秘密
+    </button>
+    <div class="rowbtn">
+      <span></span>
+      <button class="arrowbtn" id="nextP3" aria-label="下一页">›</button>
+    </div>
+  </div>
+</section>
+
+<!-- 茶砖彩蛋弹窗 -->
+<div class="modal" id="brickModal">
+  <div class="box">
+    <button class="mclose" aria-label="关闭">×</button>
+    <h3>为什么茶要压成砖？</h3>
+    <p>路途数月，茶砖不怕潮、不占地方，也耐得住风吹雨淋——</p>
+    <p style="margin-top:6px">一块茶砖几斤重，一匹骡子，能驮上百斤。</p>
+    <p style="margin-top:6px" class="em">茶，就这样被“背”上了高原。</p>
+  </div>
+</div>
+
+<!-- ===== P4 险途 ===== -->
+<section class="page" id="p4">
+  <div class="pbg"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="chap">第二幕 · 险途</div>
+    <h2 class="tt">用命走通的路</h2>
+    <div class="card">
+      <p>可这条路，比想象中险得多。</p>
+      <p style="margin-top:6px">点一点下面的三程险路，一段一段走过来——</p>
+    </div>
+    <div class="risk" data-r="1">
+      <div class="rh"><span class="no">01</span>溜索过江</div>
+      <div class="rd">金沙江、澜沧江、怒江，没有桥。骡马被捆起来吊上溜索，一百多匹，总有几匹，永远留在了江水里。</div>
+    </div>
+    <div class="risk" data-r="2">
+      <div class="rh"><span class="no">02</span>背夫茶路</div>
+      <div class="rd">雅安到康定的山道上，背夫背着一百多斤的茶包，拄着木棍，一步一步，走成山道上三只脚的影子。</div>
+    </div>
+    <div class="risk" data-r="3">
+      <div class="rh"><span class="no">03</span>风雪垭口</div>
+      <div class="rd">翻垭口、闯风雪，缺氧、严寒——每一步，都在和天抢路。</div>
+    </div>
+    <div class="goldline" id="p4Gold">“宁可三日无粮，不可一日无茶。”</div>
+    <button class="btn hide" id="btnP4">前方，茶遇见了马</button>
+  </div>
+</section>
+
+<!-- ===== P5 相遇 ===== -->
+<section class="page" id="p5">
+  <div class="pbg"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="chap">第三幕 · 相遇</div>
+    <h2 class="tt">茶与马的奔赴</h2>
+    <div class="card">
+      <p>汉地缺马，高原缺茶——一个要马，一个要茶，谁也离不开谁。</p>
+      <p class="em">你有的，恰好是我缺的；我缺的，恰好你有。</p>
+    </div>
+    <div class="trade">
+      <div class="two">
+        <div class="side">
+          <h4>内地 · 驮来</h4>
+          <div class="goods" id="gLeft">
+            <button class="good" data-g="茶">茶</button>
+            <button class="good" data-g="盐">盐</button>
+            <button class="good" data-g="布">布</button>
+          </div>
+        </div>
+        <div class="side">
+          <h4>高原 · 回赠</h4>
+          <div class="goods" id="gRight">
+            <button class="good" data-g="马">马</button>
+            <button class="good" data-g="药材">药材</button>
+            <button class="good" data-g="牦牛">牦牛</button>
+          </div>
+        </div>
+      </div>
+      <div class="tlog" id="tLog">点左边一样，再点右边一样，完成一次交换</div>
+    </div>
+    <div class="stamp" id="stamp">双向<br>奔赴</div>
+    <button class="btn hide" id="btnP5">路还在往前</button>
+  </div>
+</section>
+
+<!-- ===== P6 共生 ===== -->
+<section class="page" id="p6">
+  <div class="wrap">
+    <div class="chap">第四幕 · 共生</div>
+    <h2 class="tt">活成同一个家</h2>
+    <p style="font-size:14.5px;line-height:1.8;color:var(--brown)">马帮带来的，不只是茶——还有手艺、故事、歌谣、节日。</p>
+    <div class="gallery" id="gallery">
+      <div class="gslide">
+        <img src="assets/night_town.jpg" alt="古城灯火">
+        <div class="cap">一条商道，长出了一座座共同生活的古城。</div>
+      </div>
+      <div class="gslide">
+        <img src="assets/dance.jpg" alt="锅庄圆圈">
+        <div class="cap">转圈的人，穿着各族的花色衣裳，唱着各族的歌。</div>
+      </div>
+      <div class="gslide">
+        <img src="assets/tea_pass.jpg" alt="一碗茶的温度">
+        <div class="cap">老阿妈把热茶递给旅人——家的味道，就是这么递出来的。</div>
+      </div>
+    </div>
+    <div class="gdots" id="gdots"><i class="on"></i><i></i><i></i></div>
+    <div class="goldline dark">一条路走了一千多年，路上的人，不再分你我。</div>
+    <button class="btn" id="btnP6">回头看看这条路</button>
+  </div>
+</section>
+
+<!-- ===== P7 回望 ===== -->
+<section class="page" id="p7">
+  <div class="pbg"></div>
+  <div class="veil"></div>
+  <div class="wrap">
+    <div class="chap">尾声 · 回望</div>
+    <h2 class="tt">家园之路在今天</h2>
+    <div class="times">
+      <button class="t on" data-t="past">昔 · 马帮铃声</button>
+      <button class="t" data-t="now">今 · 天堑通途</button>
+    </div>
+    <div class="card">
+      <p id="tNote">昔：马帮驮茶，铃声翻山——一千多年，一步一个脚印。</p>
+      <p style="margin-top:10px" class="em">你中有我，我中有你，同饮一杯茶，同过一个节。</p>
+    </div>
+    <div class="rowbtn">
+      <button class="arrowbtn" id="prevP7" aria-label="上一页">‹</button>
+      <button class="btn" id="btnP7">给古道写一句话</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== P8 留言 ===== -->
+<section class="page" id="p8">
+  <div class="wrap">
+    <div class="chap">尾声 · 留言</div>
+    <h2 class="tt">给古道写一句话</h2>
+    <div class="chips" id="chips">
+      <button class="chip" data-s="愿茶香常暖，古道常青">愿茶香常暖，古道常青</button>
+      <button class="chip" data-s="马铃声，再响千年">马铃声，再响千年</button>
+      <button class="chip" data-s="同一条路，同一个家">同一条路，同一个家</button>
+    </div>
+    <textarea id="msgInput" placeholder="也可以写下你自己想说的话……" maxlength="40"></textarea>
+    <button class="btn" id="btnGen">生成我的茶马信物卡</button>
+    <div class="postcard" id="postcard">
+      <span class="pc-no" id="pcNo">茶马信物卡 · 第 000 号</span>
+      <span class="pc-stamp">茶马<br>信物</span>
+      <h4>茶马信物卡</h4>
+      <div class="pc-words" id="pcWords"></div>
+      <div class="pc-foot">沿古道，寄给每一个你 · 以茶为路</div>
+    </div>
+    <div class="rowbtn">
+      <button class="arrowbtn" id="prevP8" aria-label="上一页">‹</button>
+      <button class="btn gold hide" id="btnP8">抵达终点</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== P9 结尾 ===== -->
+<section class="page" id="p9">
+  <div class="pbg"></div>
+  <div class="veil"></div>
+  <div class="wrap center">
+    <div class="final">构筑中华民族<small>共有精神家园</small></div>
+    <div class="card">
+      <p style="text-align:center">这，就是中华民族共有的精神家园。</p>
+      <p style="text-align:center;margin-top:6px">茶还在煮，路还在走。</p>
+    </div>
+    <div class="quote">“下一个马铃声，等你一起出发。”</div>
+    <button class="btn gold" id="btnP9">重新走一遍</button>
+    <div class="foot">北京市大学生人文知识竞赛 · 2026 · 《以茶为路》</div>
+  </div>
+</section>
+
+</div>
+<script>
+(function(){
+  'use strict';
+  var PAGES = document.querySelectorAll('.page');
+  var TOTAL = PAGES.length;
+  var cur = 0;
+  var dotsBox = document.getElementById('dots');
+  var pageno = document.getElementById('pageno');
+
+  /* ---------- 音频：马铃音效 ---------- */
+  var audioCtx = null;
+  var muted = false;
+  var unlocked = false;
+  function ensureAudio(){
+    if (unlocked) return;
+    unlocked = true;
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+    } catch(e) { audioCtx = null; }
+  }
+  function bell(freq, delay, vol){
+    if (muted || !audioCtx) return;
+    try {
+      var t0 = audioCtx.currentTime + (delay || 0);
+      var o = audioCtx.createOscillator();
+      var g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(vol || 0.16, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + 1.1);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t0); o.stop(t0 + 1.2);
+    } catch(e) {}
+  }
+  function ding(){ bell(1567.98, 0, 0.14); bell(2093, 0.1, 0.10); }
+  function chime(){ bell(1318.5, 0, 0.12); bell(1760, 0.12, 0.09); }
+
+  document.addEventListener('pointerdown', ensureAudio, { once: true });
+
+  var soundBtn = document.getElementById('soundBtn');
+  var iconOn = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 9.5a4 4 0 0 1 0 5"/><path d="M19 7a8 8 0 0 1 0 10"/></svg>';
+  var iconOff = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>';
+  soundBtn.innerHTML = iconOn;
+  soundBtn.addEventListener('click', function(){
+    ensureAudio();
+    muted = !muted;
+    soundBtn.innerHTML = muted ? iconOff : iconOn;
+    if (!muted) ding();
+    showToast(muted ? '已静音' : '马铃已响');
+  });
+
+  /* ---------- 页面导航 ---------- */
+  function go(n){
+    if (n < 0 || n >= TOTAL) {
+      if (n >= TOTAL) showToast('已到终点，可重新走一遍');
+      return;
+    }
+    cur = n;
+    for (var i = 0; i < TOTAL; i++) {
+      PAGES[i].classList.toggle('active', i === n);
+    }
+    var dots = dotsBox.children;
+    for (var j = 0; j < dots.length; j++) {
+      dots[j].classList.toggle('on', j === n);
+    }
+    pageno.textContent = (n + 1) + ' / ' + TOTAL;
+    if (n === 5) { document.getElementById('gallery').scrollLeft = 0; }
+    ding();
+  }
+  function next(){ go(cur + 1); }
+  function prev(){ go(cur - 1); }
+
+  /* 进度点 */
+  for (var d = 0; d < TOTAL; d++) {
+    (function(i){
+      var b = document.createElement('button');
+      b.setAttribute('aria-label', '第 ' + (i + 1) + ' 页');
+      b.addEventListener('click', function(){ go(i); });
+      dotsBox.appendChild(b);
+    })(d);
+  }
+
+  /* 滑动 / 滚轮 / 键盘 */
+  function wrapAtEdge(dir){
+    var w = document.querySelector('.page.active .wrap');
+    if (!w) return true;
+    if (dir > 0) { return (w.scrollTop + w.clientHeight >= w.scrollHeight - 2); }
+    return w.scrollTop <= 2;
+  }
+  var sy = null;
+  var stage = document.getElementById('stage');
+  stage.addEventListener('touchstart', function(e){ sy = e.touches[0].clientY; }, { passive: true });
+  stage.addEventListener('touchend', function(e){
+    if (sy === null) return;
+    var dy = sy - e.changedTouches[0].clientY;
+    if (dy > 55) { if (wrapAtEdge(1)) next(); }
+    else if (dy < -55) { if (wrapAtEdge(-1)) prev(); }
+    sy = null;
+  }, { passive: true });
+  window.addEventListener('wheel', function(e){
+    if (e.target.closest && e.target.closest('textarea')) return;
+    if (e.deltaY > 30) { if (wrapAtEdge(1)) next(); }
+    else if (e.deltaY < -30) { if (wrapAtEdge(-1)) prev(); }
+  }, { passive: true });
+  window.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') next();
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') prev();
+  });
+
+  /* ---------- 按钮 ---------- */
+  document.getElementById('btnP1').addEventListener('click', function(){ go(1); });
+  document.getElementById('btnP2').addEventListener('click', function(){ go(2); });
+  document.getElementById('nextP3').addEventListener('click', function(){ go(3); });
+  document.getElementById('btnP4').addEventListener('click', function(){ go(4); });
+  document.getElementById('btnP5').addEventListener('click', function(){ go(5); });
+  document.getElementById('btnP6').addEventListener('click', function(){ go(6); });
+  document.getElementById('prevP7').addEventListener('click', function(){ go(5); });
+  document.getElementById('btnP7').addEventListener('click', function(){ go(7); });
+  document.getElementById('prevP8').addEventListener('click', function(){ go(6); });
+  document.getElementById('btnP8').addEventListener('click', function(){ go(8); });
+  document.getElementById('btnP9').addEventListener('click', function(){ replay(); });
+
+  /* ---------- P2 猜谜 ---------- */
+  var answered = false;
+  var qOpts = document.querySelectorAll('.q-opt');
+  var qFb = document.getElementById('qFb');
+  var btnP2 = document.getElementById('btnP2');
+  qOpts.forEach(function(b){
+    b.addEventListener('click', function(){
+      if (answered) return;
+      answered = true;
+      ensureAudio(); ding();
+      qOpts.forEach(function(x){ x.classList.add('done'); });
+      if (b.dataset.opt === 'b') { b.classList.add('right'); }
+      else { document.querySelector('.q-opt[data-opt="b"]').classList.add('right'); }
+      var lead = (b.dataset.opt === 'b') ? '答对了！' : '没那么简单——';
+      qFb.textContent = lead + '茶，不是天上掉下来的，也不是顺江漂上来的：高原上，没有桥，没有路，只有马帮和背夫的脚印。人背马驮，一步一步走上来——这一走，就是一千多年。';
+      qFb.classList.add('show');
+      btnP2.classList.remove('hide');
+    });
+  });
+
+  /* ---------- P3 茶砖彩蛋 ---------- */
+  var brickModal = document.getElementById('brickModal');
+  document.getElementById('brickBtn').addEventListener('click', function(){
+    ensureAudio(); chime();
+    brickModal.classList.add('show');
+  });
+  brickModal.querySelector('.mclose').addEventListener('click', function(){ brickModal.classList.remove('show'); });
+  brickModal.addEventListener('click', function(e){
+    if (e.target === brickModal) brickModal.classList.remove('show');
+  });
+
+  /* ---------- P4 险途三卡 ---------- */
+  var litCount = 0;
+  var btnP4 = document.getElementById('btnP4');
+  document.querySelectorAll('.risk').forEach(function(c){
+    c.addEventListener('click', function(){
+      if (c.classList.contains('lit')) return;
+      ensureAudio(); chime();
+      c.classList.add('lit');
+      litCount++;
+      if (litCount === 3) { btnP4.classList.remove('hide'); ding(); }
+    });
+  });
+
+  /* ---------- P5 双向交换 ---------- */
+  var selLeft = null;
+  var pairCount = 0;
+  var tLog = document.getElementById('tLog');
+  var stamp = document.getElementById('stamp');
+  var btnP5 = document.getElementById('btnP5');
+  document.querySelectorAll('#gLeft .good').forEach(function(b){
+    b.addEventListener('click', function(){
+      ensureAudio();
+      document.querySelectorAll('#gLeft .good').forEach(function(x){ x.classList.remove('sel'); });
+      b.classList.add('sel');
+      selLeft = b;
+      tLog.textContent = '已选「' + b.dataset.g + '」——再点右边一样东西';
+    });
+  });
+  document.querySelectorAll('#gRight .good').forEach(function(b){
+    b.addEventListener('click', function(){
+      if (!selLeft) { ensureAudio(); tLog.textContent = '先点左边一样，驮向高原的货物'; return; }
+      ensureAudio(); chime();
+      var leftName = selLeft.dataset.g;
+      var rightName = b.dataset.g;
+      selLeft.classList.add('done'); selLeft.classList.remove('sel');
+      b.classList.add('done');
+      pairCount++;
+      tLog.textContent = '「' + leftName + '」换「' + rightName + '」——双向奔赴（' + pairCount + '/3）';
+      selLeft = null;
+      if (pairCount === 3) {
+        stamp.classList.add('show');
+        ding();
+        setTimeout(function(){ btnP5.classList.remove('hide'); }, 600);
+      }
+    });
+  });
+
+  /* ---------- P6 画廊 ---------- */
+  var gallery = document.getElementById('gallery');
+  var gdots = document.getElementById('gdots').children;
+  gallery.addEventListener('scroll', function(){
+    var idx = Math.round(gallery.scrollLeft / gallery.clientWidth);
+    for (var i = 0; i < gdots.length; i++) { gdots[i].classList.toggle('on', i === idx); }
+  });
+
+  /* ---------- P7 今昔切换 ---------- */
+  var tNote = document.getElementById('tNote');
+  document.querySelectorAll('.times .t').forEach(function(t){
+    t.addEventListener('click', function(){
+      if (t.classList.contains('on')) return;
+      ensureAudio(); chime();
+      document.querySelectorAll('.times .t').forEach(function(x){ x.classList.remove('on'); });
+      t.classList.add('on');
+      tNote.textContent = (t.dataset.t === 'past')
+        ? '昔：马帮驮茶，铃声翻山——一千多年，一步一个脚印。'
+        : '今：公路、铁路、飞机，把天堑变成通途——可路，还连着你我。';
+    });
+  });
+
+  /* ---------- P8 信物卡 ---------- */
+  var chips = document.querySelectorAll('.chip');
+  var msgInput = document.getElementById('msgInput');
+  var btnGen = document.getElementById('btnGen');
+  var postcard = document.getElementById('postcard');
+  var pcNo = document.getElementById('pcNo');
+  var pcWords = document.getElementById('pcWords');
+  var btnP8 = document.getElementById('btnP8');
+  chips.forEach(function(c){
+    c.addEventListener('click', function(){
+      ensureAudio();
+      chips.forEach(function(x){ x.classList.remove('on'); });
+      c.classList.add('on');
+      msgInput.value = c.dataset.s;
+    });
+  });
+  msgInput.addEventListener('input', function(){
+    chips.forEach(function(x){ x.classList.remove('on'); });
+  });
+  btnGen.addEventListener('click', function(){
+    ensureAudio(); ding();
+    var words = (msgInput.value || '').trim() || '同一条路，同一个家';
+    var no = Math.floor(100 + Math.random() * 900);
+    pcNo.textContent = '茶马信物卡 · 第 ' + no + ' 号';
+    pcWords.textContent = '“' + words + '”';
+    postcard.classList.add('show');
+    btnP8.classList.remove('hide');
+    showToast('长按卡片，即可保存分享');
+  });
+
+  /* ---------- 提示 ---------- */
+  var toastTimer = null;
+  var toastEl = null;
+  function showToast(msg){
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.className = 'toast';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2300);
+  }
+
+  /* ---------- 重播 ---------- */
+  function replay(){
+    answered = false;
+    qOpts.forEach(function(x){ x.classList.remove('done','right'); });
+    qFb.classList.remove('show');
+    btnP2.classList.add('hide');
+    document.querySelectorAll('.risk').forEach(function(c){ c.classList.remove('lit'); });
+    litCount = 0;
+    btnP4.classList.add('hide');
+    document.querySelectorAll('.good').forEach(function(x){ x.classList.remove('done','sel'); });
+    pairCount = 0; selLeft = null;
+    tLog.textContent = '点左边一样，再点右边一样，完成一次交换';
+    stamp.classList.remove('show');
+    btnP5.classList.add('hide');
+    gallery.scrollLeft = 0;
+    document.querySelectorAll('.times .t').forEach(function(x,i){ x.classList.toggle('on', i === 0); });
+    tNote.textContent = '昔：马帮驮茶，铃声翻山——一千多年，一步一个脚印。';
+    chips.forEach(function(x){ x.classList.remove('on'); });
+    msgInput.value = '';
+    postcard.classList.remove('show');
+    btnP8.classList.add('hide');
+    go(0);
+  }
+
+  go(0);
+})();
+</script>
+
+</body>
+</html>
